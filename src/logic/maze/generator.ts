@@ -46,7 +46,7 @@ export namespace Generator {
       let nextCell: Cell | null = getRandomStartCell(cells);
 
       // Then, open that wall and randomly create/walk a path over all unexplored cells until a random number hits or there's no valid path available
-      while (nextCell && Math.random() > pathLengths) {
+      while (nextCell && (pathLengths == 0 || Math.random() > pathLengths)) {
         if (stepDuration == 0) {
           nextCell = walkFromCell(cells, nextCell)
         } else {
@@ -92,6 +92,20 @@ export namespace Generator {
     return explored[getRandomIndex(explored.length)];
   }
 
+  const walkFromCell = (cells: Cell[][], cell: Cell): Cell | null => {
+    // Get random unexplored neighbor cell
+    const neighbors = getNeighbours(cells, cell);
+    const unexplored = neighbors.filter(it => !it.explored);
+    if (unexplored.length == 0) return null;
+
+    const nextCell = unexplored[getRandomIndex(unexplored.length)];
+    nextCell.explored = true;
+
+    // Remove wall between the cells
+    removeWallBetweenCells(cell, nextCell);
+    return nextCell;
+  }
+
   const getRandomIndex = (max: number) => Math.floor(Math.random() * max)
 
   const getNeighbours = (cells: Cell[][], cell: Cell) =>
@@ -122,18 +136,4 @@ export namespace Generator {
       b.walls[0] = 0;
     }
   };
-
-  const walkFromCell = (cells: Cell[][], cell: Cell): Cell | null => {
-    // Get random unexplored neighbor cell
-    const neighbors = getNeighbours(cells, cell);
-    const unexplored = neighbors.filter(it => !it.explored);
-    if (unexplored.length == 0) return null;
-
-    const nextCell = unexplored[getRandomIndex(unexplored.length)];
-    nextCell.explored = true;
-
-    // Remove wall between the cells
-    removeWallBetweenCells(cell, nextCell);
-    return nextCell;
-  }
 }
