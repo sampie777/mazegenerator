@@ -1,6 +1,12 @@
 import type { Cell } from "./definitions.ts";
+import { delayed } from "../utils.ts";
 
 export namespace Generator {
+  export type Options = {
+    pathLengths: number // 0 for long paths, 1 for very short paths
+    stepDuration: number  // ms each step may take. Set to 0 for no animation
+  }
+
   export const generateNewCells = (width: number, height: number) => {
     const cells: Cell[][] = [];
     for (let y = 0; y < height; y++) {
@@ -20,23 +26,34 @@ export namespace Generator {
     return cells;
   };
 
-  export const generatePaths = (cells: Cell[][]) => {
+  export const generatePaths = async (
+    cells: Cell[][],
+    options: Options = {
+      pathLengths: 0.07,
+      stepDuration: 10
+    }) => {
+    const pathLengths = Math.max(0, Math.min(0.9, options.pathLengths));
+    const stepDuration = Math.max(0, options.stepDuration);
+
     // Reset
     resetMaze(cells);
 
-    // First fill all the walls for the perimeter and the solution path
-    // drawPerimeterWalls(cells);
+    // First clear the solution path from walls
     drawSolutionWalls(cells);
 
     while (cells.some(row => row.some(cell => !cell.explored))) {
-      console.log("Finding new starting point")
-
       // Then, find a random wall inside the perimeter (should be on the solution path if this is the first run)
       let nextCell: Cell | null = getRandomStartCell(cells);
+
       // Then, open that wall and randomly create/walk a path over all unexplored cells until a random number hits or there's no valid path available
-      while (nextCell && Math.random() > 0.03) {
-        nextCell = walkFromCell(cells, nextCell);
+      while (nextCell && Math.random() > pathLengths) {
+        if (stepDuration == 0) {
+          nextCell = walkFromCell(cells, nextCell)
+        } else {
+          nextCell = await delayed(() => walkFromCell(cells, nextCell!), stepDuration);
+        }
       }
+
       // Then start over by finding a new random wall anywhere inside the perimeter
     }
   }
