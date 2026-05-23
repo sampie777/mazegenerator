@@ -20,6 +20,13 @@ export default defineConfig([
     },
     rules: {
       "@typescript-eslint/no-namespace": false,
+      'react-refresh/only-export-components': [
+        'warn',
+        { allowConstantExport: true },
+      ],
+      '@typescript-eslint/no-empty-object-type': false,
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": "off"
     }
   },
 ])

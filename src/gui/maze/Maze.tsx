@@ -1,6 +1,5 @@
-import React from "react";
-import MazeCell from "./MazeCell.tsx";
-import './style.less';
+import React, { type MouseEvent } from "react";
+import MazeCanvas from "./MazeCanvas.tsx";
 import type { Cell } from "../../logic/maze/definitions.ts";
 
 type Props = {
@@ -8,14 +7,34 @@ type Props = {
 }
 
 const Maze: React.FC<Props> = ({ cells }) => {
+  const cellSize = 40;
+
+  const findCellAtLocation = (cells: Cell[][], location: { x: number; y: number }) => {
+    const cellX = Math.floor(location.x / cellSize);
+    const cellY = Math.floor(location.y / cellSize);
+
+    if (cellY < 0 || cellY >= cells.length || cellX < 0 || cellX >= cells[0].length) {
+      return null;
+    }
+
+    return cells[cellY][cellX];
+  };
+
+  const onClick = (e: MouseEvent<HTMLCanvasElement>) => {
+    const location = {
+      x: e.nativeEvent.offsetX,
+      y: e.nativeEvent.offsetY,
+    };
+
+    const cell = findCellAtLocation(cells, location);
+    if (!cell) return;
+    cell.isSolution = !cell.isSolution;
+  }
+
   return <div className={"Maze"}>
-    {cells.map(row =>
-      <div className={"MazeRow"}>
-        {row.map(cell =>
-          <MazeCell key={cell.y * row.length + cell.x} cell={cell} />
-        )}
-      </div>
-    )}
+    <MazeCanvas cells={cells}
+                size={cellSize}
+                onClick={onClick} />
   </div>;
 }
 

@@ -12,6 +12,11 @@ const App = () => {
         <h1>Get started</h1>
 
         <Maze cells={cells} />
+
+        <br/>
+        <div>
+          <button>Generate</button>
+        </div>
       </div>
     </section>
   </>
