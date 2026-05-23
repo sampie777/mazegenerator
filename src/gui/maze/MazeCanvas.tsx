@@ -10,9 +10,10 @@ type Props = {
 }
 
 const MazeCanvas: React.FC<Props> = ({ cells, size, onClick }) => {
-  const canvasWidth = cells[0].length * size;
-  const canvasHeight = cells.length * size;
   const wallSize = 4;
+  const canvasPadding = wallSize;
+  const canvasWidth = cells[0].length * size + 2 * canvasPadding;
+  const canvasHeight = cells.length * size + 2 * canvasPadding;
 
   const onCanvasInit = (context: CanvasRenderingContext2D) => {
     repaint(context);
@@ -26,15 +27,16 @@ const MazeCanvas: React.FC<Props> = ({ cells, size, onClick }) => {
   }
 
   const clearCanvas = (context: CanvasRenderingContext2D) => {
-    context.clearRect(0, 0, canvasWidth, canvasHeight);
+    context.fillStyle = "#fff";
+    context.fillRect(0, 0, canvasWidth, canvasHeight);
   }
 
   const paintCells = (context: CanvasRenderingContext2D) => {
-    // Draw background color and passive walls
+      // Draw background color and passive walls
     cells.forEach((row, y) => row.forEach((cell, x) => {
       const cellStart = {
-        x: x * size,
-        y: y * size,
+        x: canvasPadding + x * size,
+        y: canvasPadding + y * size,
       }
       context.fillStyle = cell.isSolution ? "#8c8"
         : cell.explored ? "#fff" : "#aaa";
@@ -57,8 +59,8 @@ const MazeCanvas: React.FC<Props> = ({ cells, size, onClick }) => {
     // Draw active walls on top
     cells.forEach((row, y) => row.forEach((cell, x) => {
       const cellStart = {
-        x: x * size,
-        y: y * size,
+        x: canvasPadding + x * size,
+        y: canvasPadding + y * size,
       }
 
       cell.walls.forEach((wall, w) => {
