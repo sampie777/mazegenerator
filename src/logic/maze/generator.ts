@@ -61,24 +61,19 @@ export namespace Generator {
     const solution = cells.flatMap(row => row.filter(it => it.isSolution));
     solution.forEach(cell => cell.walls = [1, 1, 1, 1]);
 
-    // const startCell = solution.find(cell => cell.x == 0 || cell.y == 0 || cell.x == cells[0].length - 1 || cell.y == cells.length - 1);
-    // const endCell = solution.find(cell => cell != startCell && (cell.x == 0 || cell.y == 0 || cell.x == cells[0].length - 1 || cell.y == cells.length - 1));
-    // if (startCell == null) throw Error("Could not find start cell")
-    // if (endCell == null) throw Error("Could not find end cell")
-
     solution.forEach(cell => {
-      const adjecent = solution
+      const adjacent = solution
         .filter(it => it != cell)
         .filter(it => {
           const diffX = Math.abs(it.x - cell.x);
           const diffY = Math.abs(it.y - cell.y);
-          if (diffX > 1 || diffY > 1) return false; // Not a neighbour
-          if (diffX == diffY) return false; // Diagonal neighbour
+          if (diffX > 1 || diffY > 1) return false; // Not a neighbor
+          if (diffX == diffY) return false; // Diagonal neighbor
           return true;
         });
 
       // Remove walls between the cells
-      adjecent.forEach(it => {
+      adjacent.forEach(it => {
         const diffX = it.x - cell.x;
         const diffY = it.y - cell.y;
         if (diffX < 0) {
@@ -97,7 +92,7 @@ export namespace Generator {
       })
 
       // Remove walls on outside
-      if (adjecent.length == 1) {
+      if (adjacent.length == 1) {
         if (cell.x == 0) cell.walls[3] = 0;
         if (cell.x == cells[0].length - 1) cell.walls[1] = 0;
         if (cell.y == 0) cell.walls[0] = 0;
