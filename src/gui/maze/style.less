@@ -1,0 +1,28 @@
+
+@cellSize: 30px;
+
+.Maze {
+  display: flex;
+  flex-direction: column;
+
+  .MazeRow {
+    display: flex;
+    flex-direction: row;
+
+    .MazeCell {
+      width: @cellSize;
+      height: @cellSize;
+      background-color: #aaa;
+      border: 1px solid #fff;
+      box-sizing: border-box;
+
+      &.explored {
+        background-color: #eee;
+      }
+
+      &.solution {
+        background-color: #6a6;
+      }
+    }
+  }
+}
