@@ -7,6 +7,7 @@ type Props = {
   cells: Cell[][];
   size: number;
   wallSize?: number;
+  showSolutionPath?: boolean;
 } & DOMAttributes<HTMLCanvasElement>;
 
 const MazeCanvas: React.FC<Props> = (props) => {
@@ -16,6 +17,7 @@ const MazeCanvas: React.FC<Props> = (props) => {
   const wallSize = props.wallSize ?? 4;
   const canvasPadding = wallSize;
   const cellsRef = useRef<Cell[][]>([[]]);
+  const showSolutionPath = useRef(props.showSolutionPath);
 
   const canvasWidth = useMemo(() => cells[0].length * size + 2 * canvasPadding, [cells]);
   const canvasHeight = useMemo(() => cells.length * size + 2 * canvasPadding, [cells]);
@@ -29,6 +31,10 @@ const MazeCanvas: React.FC<Props> = (props) => {
     canvasWidthRef.current = canvasWidth;
     canvasHeightRef.current = canvasHeight;
   }, [cells]);
+
+  useEffect(() => {
+    showSolutionPath.current = props.showSolutionPath ?? true;
+  }, [props.showSolutionPath]);
 
   const onCanvasInit = (context: CanvasRenderingContext2D) => {
     repaint(context);
@@ -53,7 +59,7 @@ const MazeCanvas: React.FC<Props> = (props) => {
         x: canvasPadding + x * size,
         y: canvasPadding + y * size,
       }
-      context.fillStyle = cell.isSolution ? "#8c8"
+      context.fillStyle = cell.isSolution && showSolutionPath.current ? "#8c8"
         : cell.explored ? "#fff" : "#aaa";
       context.fillRect(cellStart.x, cellStart.y, size, size);
 
@@ -105,6 +111,7 @@ const MazeCanvas: React.FC<Props> = (props) => {
 
   const domProps = {...props};
   delete domProps.wallSize;
+  delete domProps.showSolutionPath;
 
   return <Canvas
     {...domProps}

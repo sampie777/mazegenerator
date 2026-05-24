@@ -8,6 +8,7 @@ const App = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [pathLengths, setPathLengths] = useState((1 - 0.07) * 100);
   const [stepDuration, setStepDuration] = useState(6);
+  const [showSolutionPath, setShowSolutionPath] = useState(true);
   const [width, setWidth] = useState(12);
   const [height, setHeight] = useState(8);
 
@@ -50,7 +51,7 @@ const App = () => {
                  onChange={e => setHeight(+e.target.value)} />
         </div>
 
-        <Maze cells={cells} />
+        <Maze cells={cells} showSolutionPath={showSolutionPath} />
 
         <div>
           <div>
@@ -71,7 +72,16 @@ const App = () => {
               ({stepDuration} ms)
             </label>
           </div>
-          <button onClick={startGeneration} disabled={isGenerating}>Generate</button>
+
+          <div>
+            <button onClick={startGeneration} disabled={isGenerating}>Generate</button>
+            <label>
+              <input type={"checkbox"}
+                     onChange={() => setShowSolutionPath(!showSolutionPath)}
+                     checked={showSolutionPath} />
+              Show solution path
+            </label>
+          </div>
         </div>
       </div>
     </section>

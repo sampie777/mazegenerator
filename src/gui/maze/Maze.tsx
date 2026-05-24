@@ -4,9 +4,10 @@ import type { Cell } from "../../logic/maze/definitions.ts";
 
 type Props = {
   cells: Cell[][];
+  showSolutionPath?: boolean;
 }
 
-const Maze: React.FC<Props> = ({ cells }) => {
+const Maze: React.FC<Props> = ({ cells, showSolutionPath }) => {
   const cellSize = 40;
   const wallSize = 4;
 
@@ -71,6 +72,7 @@ const Maze: React.FC<Props> = ({ cells }) => {
     <MazeCanvas cells={cells}
                 size={cellSize}
                 wallSize={wallSize}
+                showSolutionPath={showSolutionPath}
                 onMouseDown={onMouseDown}
                 onMouseUp={onMouseUp}
                 onMouseLeave={onMouseUp}
