@@ -43,11 +43,17 @@ const App = () => {
     }, 10);
   }
 
+  let startTime = 0;
   const stepCallback = async (): Promise<boolean> => {
     if (shouldStopRef.current) return false;
 
     const cappedStepDuration = Math.max(0, stepDurationRef.current);
-    if (cappedStepDuration == 0) return true;
+    // Don't let the GUI freeze completely, but only for a max amount of time
+    const timePassed = Date.now() - startTime;
+
+    if (timePassed < 1000 && cappedStepDuration == 0) return true;
+    startTime = Date.now();
+
     // Sleep
     await delayed(() => null, cappedStepDuration);
     return true;
@@ -180,7 +186,7 @@ const App = () => {
                     className={"generateButton"}
                     disabled={isGenerating || (width < 1 || height < 1)}>{isGenerating ? "Generating..." : "Generate"}</button>
             <button onClick={() => shouldStopRef.current = true}
-                    disabled={!isGenerating || stepDuration == 0}>Stop
+                    disabled={!isGenerating}>Stop
             </button>
           </div>
 
