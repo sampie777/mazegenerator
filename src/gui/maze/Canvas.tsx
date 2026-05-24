@@ -22,8 +22,6 @@ const Canvas: React.FC<Props> = (props) => {
 
   return <canvas {...domProps}
                  className={"Canvas"}
-                 width={props.width}
-                 height={props.height}
                  ref={ref} />
 }
 

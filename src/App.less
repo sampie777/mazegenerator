@@ -1,0 +1,75 @@
+#center {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  place-content: center;
+  flex-grow: 1;
+
+  @media (max-width: 1024px) {
+    padding: 32px 20px 24px;
+    gap: 18px;
+  }
+}
+
+footer {
+  font-size: 0.7rem;
+  opacity: 0.6;
+  padding: 120px 30px 30px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.f-full {
+  flex: 1;
+}
+
+
+label {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  align-items: center;
+  justify-content: center;
+}
+
+.options {
+  font-size: 0.8rem;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  input[type=number] {
+    width: 70px;
+    text-align: right;
+  }
+}
+
+.actions {
+  font-size: 0.8rem;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+
+  .generateButton {
+    font-size: 1.1rem;
+    padding: 10px 20px;
+  }
+}
+
+.instructions {
+  font-size: 0.9rem;
+
+  ul {
+    display: inline-block;
+    text-align: left;
+  }
+}

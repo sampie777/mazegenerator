@@ -112,6 +112,10 @@ const MazeCanvas: React.FC<Props> = (props) => {
   const domProps = {...props};
   delete domProps.wallSize;
   delete domProps.showSolutionPath;
+  // @ts-ignore
+  delete domProps.size;
+  // @ts-ignore
+  delete domProps.cells;
 
   return <Canvas
     {...domProps}
