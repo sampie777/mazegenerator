@@ -100,6 +100,7 @@ export namespace Generator {
     const unexplored = neighbors.filter(it => !it.explored);
     if (unexplored.length == 0) {
       cell.hasUnvisitedNeighbors = false;
+      cell.explored = true;
       return null;
     }
 

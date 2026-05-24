@@ -1,4 +1,4 @@
-import React, { type MouseEvent } from "react";
+import React, { type MouseEvent, useEffect, useMemo, useRef } from "react";
 import './style.less';
 import type { Cell } from "../../logic/maze/definitions.ts";
 import Canvas from "./Canvas.tsx";
@@ -12,8 +12,20 @@ type Props = {
 const MazeCanvas: React.FC<Props> = ({ cells, size, onClick }) => {
   const wallSize = 4;
   const canvasPadding = wallSize;
-  const canvasWidth = cells[0].length * size + 2 * canvasPadding;
-  const canvasHeight = cells.length * size + 2 * canvasPadding;
+  const cellsRef = useRef<Cell[][]>([[]]);
+
+  const canvasWidth = useMemo(() => cells[0].length * size + 2 * canvasPadding, [cells]);
+  const canvasHeight = useMemo(() => cells.length * size + 2 * canvasPadding, [cells]);
+  const canvasWidthRef = useRef(canvasWidth);
+  const canvasHeightRef = useRef(canvasHeight);
+
+  useEffect(() => {
+    // Keep our threads updated with any big value changes
+    cellsRef.current = cells
+
+    canvasWidthRef.current = canvasWidth;
+    canvasHeightRef.current = canvasHeight;
+  }, [cells]);
 
   const onCanvasInit = (context: CanvasRenderingContext2D) => {
     repaint(context);
@@ -28,12 +40,12 @@ const MazeCanvas: React.FC<Props> = ({ cells, size, onClick }) => {
 
   const clearCanvas = (context: CanvasRenderingContext2D) => {
     context.fillStyle = "#fff";
-    context.fillRect(0, 0, canvasWidth, canvasHeight);
+    context.fillRect(0, 0, canvasWidthRef.current, canvasHeightRef.current);
   }
 
   const paintCells = (context: CanvasRenderingContext2D) => {
-      // Draw background color and passive walls
-    cells.forEach((row, y) => row.forEach((cell, x) => {
+    // Draw background color and passive walls
+    cellsRef.current.forEach((row, y) => row.forEach((cell, x) => {
       const cellStart = {
         x: canvasPadding + x * size,
         y: canvasPadding + y * size,
@@ -57,7 +69,7 @@ const MazeCanvas: React.FC<Props> = ({ cells, size, onClick }) => {
     }))
 
     // Draw active walls on top
-    cells.forEach((row, y) => row.forEach((cell, x) => {
+    cellsRef.current.forEach((row, y) => row.forEach((cell, x) => {
       const cellStart = {
         x: canvasPadding + x * size,
         y: canvasPadding + y * size,
@@ -83,8 +95,8 @@ const MazeCanvas: React.FC<Props> = ({ cells, size, onClick }) => {
 
   const getStartingPointForWall = (wallIndex: number) => {
     return {
-      x: Math.floor((wallIndex + 1) /2) % 2,
-      y: Math.floor(wallIndex /2) % 2
+      x: Math.floor((wallIndex + 1) / 2) % 2,
+      y: Math.floor(wallIndex / 2) % 2
     }
   }
 
