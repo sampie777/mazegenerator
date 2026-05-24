@@ -21,22 +21,57 @@ const Maze: React.FC<Props> = ({ cells }) => {
     return cells[cellY][cellX];
   };
 
-  const onClick = (e: MouseEvent<HTMLCanvasElement>) => {
+  const findCellAtEvent = (e: MouseEvent<HTMLCanvasElement>) => {
     const location = {
       x: e.nativeEvent.offsetX,
       y: e.nativeEvent.offsetY,
     };
 
-    const cell = findCellAtLocation(cells, location);
+    return findCellAtLocation(cells, location);
+  }
+
+  let isDragging = false;
+  let cellsChanged: Set<Cell> = new Set();
+  let startCellWasSolution = false;
+
+  const onMouseDown = (e: MouseEvent<HTMLCanvasElement>) => {
+    isDragging = true;
+    cellsChanged.clear();
+    startCellWasSolution = findCellAtEvent(e)?.isSolution ?? false;
+  }
+
+  const onMouseUp = (e: MouseEvent<HTMLCanvasElement>) => {
+    isDragging = false;
+
+    const endCell = findCellAtEvent(e);
+    if (cellsChanged.size < 2 && endCell) {
+      if (cellsChanged.size == 0) {
+        endCell.isSolution = !endCell.isSolution;
+      } else if (startCellWasSolution) {
+        endCell.isSolution = !startCellWasSolution;
+      }
+    }
+
+    cellsChanged.clear();
+  }
+
+  const onMouseMove = (e: MouseEvent<HTMLCanvasElement>) => {
+    if (!isDragging) return;
+
+    const cell = findCellAtEvent(e);
     if (!cell) return;
-    cell.isSolution = !cell.isSolution;
+    cell.isSolution = true;
+    cellsChanged.add(cell);
   }
 
   return <div className={"Maze"}>
     <MazeCanvas cells={cells}
                 size={cellSize}
                 wallSize={wallSize}
-                onClick={onClick} />
+                onMouseDown={onMouseDown}
+                onMouseUp={onMouseUp}
+                onMouseLeave={onMouseUp}
+                onMouseMove={onMouseMove} />
   </div>;
 }
 
