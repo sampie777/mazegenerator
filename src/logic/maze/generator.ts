@@ -33,7 +33,7 @@ export namespace Generator {
       pathLengths: 0.07,
       alignment: "default",
     },
-    preCalculationCallback?: () => Promise<void>
+    preCalculationCallback?: () => Promise<boolean>
   ) => {
     const pathLengths = Math.max(0, Math.min(0.9, options.pathLengths));
 
@@ -51,7 +51,8 @@ export namespace Generator {
       // Then, open that wall and randomly create/walk a path over all unexplored cells until a random number hits or there's no valid path available
       let nextCell: Cell | null = currentCell;
       while (nextCell && (pathLengths == 0 || Math.random() > pathLengths)) {
-        await preCalculationCallback?.();
+        if (await preCalculationCallback?.() === false) return;
+
         nextCell = walkFromCell(cells, nextCell, options.alignment)
       }
 

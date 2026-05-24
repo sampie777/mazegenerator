@@ -20,10 +20,13 @@ const App = () => {
   const [alignment, setAlignment] = useState<Alignment>("default");
 
   const stepDurationRef = useRef(stepDuration);
+  const shouldStopRef = useRef(false);
 
   const cells = useMemo(() => Generator.generateNewCells(width, height), [width, height]);
 
   const startGeneration = () => {
+    shouldStopRef.current = false;
+
     if (isGenerating) return;
     if (width < 1 || height < 1) return;
 
@@ -34,15 +37,20 @@ const App = () => {
         pathLengths: 1 - pathLengths / 100,
         alignment: alignment
       }, stepCallback);
+
       setIsGenerating(false);
+      shouldStopRef.current = false;
     }, 10);
   }
 
-  const stepCallback = async () => {
+  const stepCallback = async (): Promise<boolean> => {
+    if (shouldStopRef.current) return false;
+
     const cappedStepDuration = Math.max(0, stepDurationRef.current);
-    if (cappedStepDuration == 0) return
+    if (cappedStepDuration == 0) return true;
     // Sleep
     await delayed(() => null, cappedStepDuration);
+    return true;
   }
 
   const resetMaze = () => {
@@ -166,9 +174,16 @@ const App = () => {
           <button onClick={resetMaze}
                   disabled={isGenerating}>Reset
           </button>
-          <button onClick={startGeneration}
-                  className={"generateButton"}
-                  disabled={isGenerating || (width < 1 || height < 1)}>{isGenerating ? "Generating..." : "Generate"}</button>
+
+          <div className={"generating-actions"}>
+            <button onClick={startGeneration}
+                    className={"generateButton"}
+                    disabled={isGenerating || (width < 1 || height < 1)}>{isGenerating ? "Generating..." : "Generate"}</button>
+            <button onClick={() => shouldStopRef.current = true}
+                    disabled={!isGenerating || stepDuration == 0}>Stop
+            </button>
+          </div>
+
           <label>
             <input type={"checkbox"}
                    onChange={() => setShowSolutionPath(!showSolutionPath)}
