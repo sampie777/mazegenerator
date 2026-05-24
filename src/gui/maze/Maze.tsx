@@ -7,13 +7,15 @@ type Props = {
   showSolutionPath?: boolean;
   cellSize: number;
   wallSize: number;
+  disabled?: boolean;
 }
 
 const Maze: React.FC<Props> = ({
                                  cells,
                                  showSolutionPath,
                                  cellSize,
-                                 wallSize
+                                 wallSize,
+                                 disabled = false,
                                }) => {
 
   const findCellAtLocation = (cells: Cell[][], location: { x: number; y: number }) => {
@@ -41,6 +43,7 @@ const Maze: React.FC<Props> = ({
   let startCellWasSolution = false;
 
   const onMouseDown = (e: MouseEvent<HTMLCanvasElement>) => {
+    if (disabled) return;
     if (e.button != 0) return;
 
     isDragging = true;
@@ -50,6 +53,7 @@ const Maze: React.FC<Props> = ({
 
   const onMouseUp = (e: MouseEvent<HTMLCanvasElement>) => {
     isDragging = false;
+    if (disabled) return;
     if (e.button != 0) return;
 
     const endCell = findCellAtEvent(e);
@@ -65,6 +69,7 @@ const Maze: React.FC<Props> = ({
   }
 
   const onMouseMove = (e: MouseEvent<HTMLCanvasElement>) => {
+    if (disabled) return;
     if (!isDragging) return;
 
     const cell = findCellAtEvent(e);
@@ -73,7 +78,7 @@ const Maze: React.FC<Props> = ({
     cellsChanged.add(cell);
   }
 
-  return <div className={"Maze"}>
+  return <div className={`Maze ${disabled && "disabled"}`}>
     <MazeCanvas cells={cells}
                 size={cellSize}
                 wallSize={wallSize}

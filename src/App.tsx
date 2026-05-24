@@ -14,15 +14,18 @@ const App = () => {
 
   const cells = useMemo(() => Generator.generateNewCells(width, height), [width, height]);
 
-  const startGeneration = async () => {
+  const startGeneration = () => {
     if (isGenerating) return;
 
     setIsGenerating(true);
-    await Generator.generatePaths(cells, {
-      pathLengths: pathLengths,
-      stepDuration: stepDuration,
-    });
-    setIsGenerating(false);
+
+    setTimeout(async () => {
+      await Generator.generatePaths(cells, {
+        pathLengths: pathLengths,
+        stepDuration: stepDuration,
+      });
+      setIsGenerating(false);
+    }, 10);
   }
 
   const resetMaze = () => {
@@ -47,32 +50,33 @@ const App = () => {
 
         <div className={"options"}>
           <div className={"options"}>
-          Size:
-          <input type={"number"}
-                 name={"width"}
-                 min={1}
-                 value={width}
-                 onChange={e => setWidth(+e.target.value)} />
-          x
-          <input type={"number"}
-                 name={"height"}
-                 min={1}
-                 value={height}
-                 onChange={e => setHeight(+e.target.value)} />
+            Size:
+            <input type={"number"}
+                   name={"width"}
+                   min={1}
+                   value={width}
+                   onChange={e => setWidth(+e.target.value)} />
+            x
+            <input type={"number"}
+                   name={"height"}
+                   min={1}
+                   value={height}
+                   onChange={e => setHeight(+e.target.value)} />
           </div>
           <div className={"options"}>
-          <label>Scale:
-            <input type="range"
-                   name="scale"
-                   min={0} max={150}
-                   value={scale}
-                   onChange={e => setScale(+e.target.value)} />
-            ({scale} %)
-          </label>
+            <label>Scale:
+              <input type="range"
+                     name="scale"
+                     min={0} max={150}
+                     value={scale}
+                     onChange={e => setScale(+e.target.value)} />
+              ({scale} %)
+            </label>
           </div>
         </div>
 
         <Maze cells={cells}
+              disabled={isGenerating}
               showSolutionPath={showSolutionPath}
               cellSize={40 * scale / 100}
               wallSize={4 * scale / 100}
