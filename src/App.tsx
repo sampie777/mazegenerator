@@ -10,6 +10,7 @@ const App = () => {
   const [showSolutionPath, setShowSolutionPath] = useState(true);
   const [width, setWidth] = useState(12);
   const [height, setHeight] = useState(8);
+  const [scale, setScale] = useState(100);
 
   const cells = useMemo(() => Generator.generateNewCells(width, height), [width, height]);
 
@@ -33,7 +34,7 @@ const App = () => {
       <div className="container f-full">
         <h1>Maze Generator</h1>
         <p>
-          This tool let's you create a maze based on a predefined solution path.<br/>
+          This tool let's you create a maze based on a predefined solution path.<br />
           Draw this path, click Generate, and let the magic happen!
         </p>
         <div className={"instructions"}>
@@ -45,6 +46,7 @@ const App = () => {
         </div>
 
         <div className={"options"}>
+          <div className={"options"}>
           Size:
           <input type={"number"}
                  name={"width"}
@@ -57,13 +59,28 @@ const App = () => {
                  min={1}
                  value={height}
                  onChange={e => setHeight(+e.target.value)} />
+          </div>
+          <div className={"options"}>
+          <label>Scale:
+            <input type="range"
+                   name="scale"
+                   min={0} max={150}
+                   value={scale}
+                   onChange={e => setScale(+e.target.value)} />
+            ({scale} %)
+          </label>
+          </div>
         </div>
 
-        <Maze cells={cells} showSolutionPath={showSolutionPath} />
+        <Maze cells={cells}
+              showSolutionPath={showSolutionPath}
+              cellSize={40 * scale / 100}
+              wallSize={4 * scale / 100}
+        />
 
         <div className={"options"}>
           <label>Path lengths:
-            <input type="range" id="pathLengths"
+            <input type="range"
                    name="pathLengths"
                    min={0} max={100}
                    value={pathLengths}
@@ -71,7 +88,7 @@ const App = () => {
             ({pathLengths} %)
           </label>
           <label>Animation duration:
-            <input type="range" id="stepDuration"
+            <input type="range"
                    name="stepDuration"
                    min={0} max={300}
                    value={stepDuration}
@@ -82,9 +99,10 @@ const App = () => {
 
         <div className={"actions"}>
           <button onClick={resetMaze}
-                  disabled={isGenerating}>Reset</button>
+                  disabled={isGenerating}>Reset
+          </button>
           <button onClick={startGeneration}
-          className={"generateButton"}
+                  className={"generateButton"}
                   disabled={isGenerating}>{isGenerating ? "Generating..." : "Generate"}</button>
           <label>
             <input type={"checkbox"}

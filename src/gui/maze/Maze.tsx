@@ -5,11 +5,16 @@ import type { Cell } from "../../logic/maze/definitions.ts";
 type Props = {
   cells: Cell[][];
   showSolutionPath?: boolean;
+  cellSize: number;
+  wallSize: number;
 }
 
-const Maze: React.FC<Props> = ({ cells, showSolutionPath }) => {
-  const cellSize = 40;
-  const wallSize = 4;
+const Maze: React.FC<Props> = ({
+                                 cells,
+                                 showSolutionPath,
+                                 cellSize,
+                                 wallSize
+                               }) => {
 
   const findCellAtLocation = (cells: Cell[][], location: { x: number; y: number }) => {
     const cellX = Math.floor((location.x - wallSize) / cellSize);
