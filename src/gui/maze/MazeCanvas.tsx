@@ -68,8 +68,7 @@ const MazeCanvas: React.FC<Props> = (props) => {
         x: canvasPaddingRef.current + x * size,
         y: canvasPaddingRef.current + y * size,
       }
-      context.fillStyle = cell.isSolution && showSolutionPath.current ? "#8c8"
-        : cell.explored ? "#fff" : "#aaa";
+      context.fillStyle = cell.isSolution && showSolutionPath.current ? "#60ea60" : "#fff";
       context.fillRect(cellStart.x, cellStart.y, size, size);
 
       if (cell.isCurrentlyProcessing) {
@@ -86,7 +85,7 @@ const MazeCanvas: React.FC<Props> = (props) => {
         context.moveTo(cellStart.x + wallStart.x * size, cellStart.y + wallStart.y * size);
         context.lineTo(cellStart.x + wallEnd.x * size, cellStart.y + wallEnd.y * size);
 
-        context.strokeStyle = "#fff";
+        context.strokeStyle = cell.explored ? "#fff" : "#ccc";
         context.lineWidth = wallSizeRef.current;
         context.lineCap = "round";
         context.stroke();
@@ -95,6 +94,8 @@ const MazeCanvas: React.FC<Props> = (props) => {
 
     // Draw active walls on top
     cellsRef.current.forEach((row, y) => row.forEach((cell, x) => {
+      if (!cell.explored) return;
+
       const cellStart = {
         x: canvasPaddingRef.current + x * size,
         y: canvasPaddingRef.current + y * size,
