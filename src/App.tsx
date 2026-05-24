@@ -21,7 +21,7 @@ const App = () => {
 
     setTimeout(async () => {
       await Generator.generatePaths(cells, {
-        pathLengths: pathLengths,
+        pathLengths: 1 - pathLengths / 100,
         stepDuration: stepDuration,
       });
       setIsGenerating(false);
