@@ -35,6 +35,8 @@ const Maze: React.FC<Props> = ({ cells }) => {
   let startCellWasSolution = false;
 
   const onMouseDown = (e: MouseEvent<HTMLCanvasElement>) => {
+    if (e.button != 0) return;
+
     isDragging = true;
     cellsChanged.clear();
     startCellWasSolution = findCellAtEvent(e)?.isSolution ?? false;
@@ -42,6 +44,7 @@ const Maze: React.FC<Props> = ({ cells }) => {
 
   const onMouseUp = (e: MouseEvent<HTMLCanvasElement>) => {
     isDragging = false;
+    if (e.button != 0) return;
 
     const endCell = findCellAtEvent(e);
     if (cellsChanged.size < 2 && endCell) {
@@ -60,7 +63,7 @@ const Maze: React.FC<Props> = ({ cells }) => {
 
     const cell = findCellAtEvent(e);
     if (!cell) return;
-    cell.isSolution = true;
+    cell.isSolution = !(e.ctrlKey || e.metaKey);
     cellsChanged.add(cell);
   }
 

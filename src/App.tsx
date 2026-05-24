@@ -28,27 +28,30 @@ const App = () => {
 
   return <>
     <section id="center">
-      <div>
+      <div className="container">
         <h1>{title}</h1>
+        <p>
+          Click or drag to create a solution path.
+          Hold Ctrl or Command key to while dragging to erase paths.
+        </p>
 
         <div>
-          Size
+          Size:
           <input type={"number"}
                  name={"width"}
                  min={1}
                  value={width}
                  onChange={e => setWidth(+e.target.value)} />
+          x
           <input type={"number"}
                  name={"height"}
                  min={1}
                  value={height}
                  onChange={e => setHeight(+e.target.value)} />
         </div>
-        <br/>
 
         <Maze cells={cells} />
 
-        <br />
         <div>
           <div>
             <label>Path lengths:
