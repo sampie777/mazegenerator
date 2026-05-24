@@ -1,4 +1,4 @@
-import React, { type MouseEvent, useEffect, useMemo, useRef } from "react";
+import React, { type DOMAttributes, useEffect, useMemo, useRef } from "react";
 import './style.less';
 import type { Cell } from "../../logic/maze/definitions.ts";
 import Canvas from "./Canvas.tsx";
@@ -6,11 +6,14 @@ import Canvas from "./Canvas.tsx";
 type Props = {
   cells: Cell[][];
   size: number;
-  onClick?: (e: MouseEvent<HTMLCanvasElement>) => void;
-}
+  wallSize?: number;
+} & DOMAttributes<HTMLCanvasElement>;
 
-const MazeCanvas: React.FC<Props> = ({ cells, size, onClick }) => {
-  const wallSize = 4;
+const MazeCanvas: React.FC<Props> = (props) => {
+  const cells = props.cells;
+  const size = props.size;
+
+  const wallSize = props.wallSize ?? 4;
   const canvasPadding = wallSize;
   const cellsRef = useRef<Cell[][]>([[]]);
 
@@ -100,10 +103,15 @@ const MazeCanvas: React.FC<Props> = ({ cells, size, onClick }) => {
     }
   }
 
-  return <Canvas width={canvasWidth}
-                 height={canvasHeight}
-                 onInit={onCanvasInit}
-                 onClick={onClick} />
+  const domProps = {...props};
+  delete domProps.wallSize;
+
+  return <Canvas
+    {...domProps}
+    width={canvasWidth}
+    height={canvasHeight}
+    onInit={onCanvasInit}
+  />
 }
 
 export default MazeCanvas;

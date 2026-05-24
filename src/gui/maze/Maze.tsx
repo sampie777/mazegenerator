@@ -8,10 +8,11 @@ type Props = {
 
 const Maze: React.FC<Props> = ({ cells }) => {
   const cellSize = 40;
+  const wallSize = 4;
 
   const findCellAtLocation = (cells: Cell[][], location: { x: number; y: number }) => {
-    const cellX = Math.floor(location.x / cellSize);
-    const cellY = Math.floor(location.y / cellSize);
+    const cellX = Math.floor((location.x - wallSize) / cellSize);
+    const cellY = Math.floor((location.y - wallSize) / cellSize);
 
     if (cellY < 0 || cellY >= cells.length || cellX < 0 || cellX >= cells[0].length) {
       return null;
@@ -34,6 +35,7 @@ const Maze: React.FC<Props> = ({ cells }) => {
   return <div className={"Maze"}>
     <MazeCanvas cells={cells}
                 size={cellSize}
+                wallSize={wallSize}
                 onClick={onClick} />
   </div>;
 }

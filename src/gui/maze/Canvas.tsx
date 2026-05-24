@@ -1,13 +1,13 @@
-import React, { type MouseEvent, useEffect, useRef } from "react";
+import React, { type DOMAttributes, useEffect, useRef } from "react";
 
 type Props = {
   width: number;
   height: number;
   onInit?: (context: CanvasRenderingContext2D) => void;
-  onClick?: (e: MouseEvent<HTMLCanvasElement>) => void;
-}
+} & DOMAttributes<HTMLCanvasElement>
 
-const Canvas: React.FC<Props> = ({ width, height, onInit, onClick }) => {
+const Canvas: React.FC<Props> = (props) => {
+  const onInit = props.onInit;
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -17,10 +17,13 @@ const Canvas: React.FC<Props> = ({ width, height, onInit, onClick }) => {
     onInit(context!);
   }, []);
 
-  return <canvas className={"Canvas"}
-                 onClick={onClick}
-                 width={width}
-                 height={height}
+  const domProps = {...props};
+  delete domProps.onInit;
+
+  return <canvas {...domProps}
+                 className={"Canvas"}
+                 width={props.width}
+                 height={props.height}
                  ref={ref} />
 }
 
