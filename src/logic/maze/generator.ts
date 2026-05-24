@@ -113,8 +113,14 @@ export namespace Generator {
     // Get random unexplored neighbor cell
     const neighbors = getNeighbours(cells, cell);
     const unexplored = neighbors.filter(it => !it.explored);
-    if (unexplored.length == 0) {
+
+    if (unexplored.length < 2) {
+      // If no neighbors, set true
+      // If only one neighbor, we are going to visit this neighbor right now, so we can set this to true in advance
       cell.hasUnvisitedNeighbors = false;
+    }
+
+    if (unexplored.length == 0) {
       cell.explored = true;
       return null;
     }
