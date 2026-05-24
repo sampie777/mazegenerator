@@ -67,12 +67,14 @@ const App = () => {
             Size:
             <input type={"number"}
                    name={"width"}
+                   disabled={isGenerating}
                    min={1}
                    value={width}
                    onChange={e => setWidth(+e.target.value)} />
             x
             <input type={"number"}
                    name={"height"}
+                   disabled={isGenerating}
                    min={1}
                    value={height}
                    onChange={e => setHeight(+e.target.value)} />
@@ -100,6 +102,7 @@ const App = () => {
           <label>Path lengths:
             <input type="range"
                    name="pathLengths"
+                   disabled={isGenerating}
                    min={0} max={100}
                    value={pathLengths}
                    onChange={e => setPathLengths(+e.target.value)} />
@@ -108,6 +111,7 @@ const App = () => {
           <label>Animation duration:
             <input type="range"
                    name="stepDuration"
+                   disabled={isGenerating}
                    min={0} max={150}
                    value={stepDuration}
                    onChange={e => setStepDuration(+e.target.value)} />
