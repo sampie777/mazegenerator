@@ -9,7 +9,7 @@ const App = () => {
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [pathLengths, setPathLengths] = useState((1 - 0.07) * 100);
+  const [pathLengths, setPathLengths] = useState(100);
   const [stepDuration, setStepDuration] = useState(6);
   const [showSolutionPath, setShowSolutionPath] = useState(true);
   const [width, setWidth] = useState(12);

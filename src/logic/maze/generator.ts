@@ -109,7 +109,7 @@ export namespace Generator {
 
     // If only a few are left, just get a random one for speed improvement
     const nonExploredCells = cellsFlat.filter(it => !it.explored);
-    if (nonExploredCells.length < 4) {
+    if (nonExploredCells.length < Math.max(4, 0.008 * cellsFlat.length)) {
       return nonExploredCells[getRandomIndex(nonExploredCells.length)];
     }
 
