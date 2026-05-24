@@ -22,7 +22,7 @@ const MazeCanvas: React.FC<Props> = (props) => {
   const cellsRef = useRef<Cell[][]>([[]]);
   const showSolutionPath = useRef(props.showSolutionPath);
 
-  const canvasWidth = useMemo(() => cells[0].length * size + 2 * canvasPadding, [cells, size, canvasPadding]);
+  const canvasWidth = useMemo(() => cells.length == 0 ? 0 : cells[0].length * size + 2 * canvasPadding, [cells, size, canvasPadding]);
   const canvasHeight = useMemo(() => cells.length * size + 2 * canvasPadding, [cells, size, canvasPadding]);
   const canvasWidthRef = useRef(canvasWidth);
   const canvasHeightRef = useRef(canvasHeight);

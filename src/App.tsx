@@ -16,6 +16,7 @@ const App = () => {
 
   const startGeneration = () => {
     if (isGenerating) return;
+    if (width < 1 || height < 1) return;
 
     setIsGenerating(true);
 
@@ -67,7 +68,7 @@ const App = () => {
             <label>Scale:
               <input type="range"
                      name="scale"
-                     min={0} max={150}
+                     min={1} max={150}
                      value={scale}
                      onChange={e => setScale(+e.target.value)} />
               ({scale} %)
@@ -107,7 +108,7 @@ const App = () => {
           </button>
           <button onClick={startGeneration}
                   className={"generateButton"}
-                  disabled={isGenerating}>{isGenerating ? "Generating..." : "Generate"}</button>
+                  disabled={isGenerating || (width < 1 || height < 1)}>{isGenerating ? "Generating..." : "Generate"}</button>
           <label>
             <input type={"checkbox"}
                    onChange={() => setShowSolutionPath(!showSolutionPath)}
