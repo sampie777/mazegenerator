@@ -108,7 +108,7 @@ const App = () => {
           <label>Animation duration:
             <input type="range"
                    name="stepDuration"
-                   min={0} max={300}
+                   min={0} max={150}
                    value={stepDuration}
                    onChange={e => setStepDuration(+e.target.value)} />
             ({stepDuration} ms)

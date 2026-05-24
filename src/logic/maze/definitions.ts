@@ -5,4 +5,5 @@ export type Cell = {
   explored: boolean
   isSolution: boolean
   hasUnvisitedNeighbors: boolean
+  isCurrentlyProcessing: boolean
 }

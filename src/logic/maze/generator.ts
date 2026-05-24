@@ -20,6 +20,7 @@ export namespace Generator {
             explored: false,
             isSolution: false,
             hasUnvisitedNeighbors: true,
+            isCurrentlyProcessing: false,
           }
         )
       }
@@ -44,9 +45,11 @@ export namespace Generator {
 
     while (cells.some(row => row.some(cell => !cell.explored))) {
       // Then, find a random wall inside the perimeter (should be on the solution path if this is the first run)
-      let nextCell: Cell | null = getRandomStartCell(cells);
+      const currentCell = getRandomStartCell(cells);
+      currentCell.isCurrentlyProcessing = true;
 
       // Then, open that wall and randomly create/walk a path over all unexplored cells until a random number hits or there's no valid path available
+      let nextCell: Cell | null = currentCell;
       while (nextCell && (pathLengths == 0 || Math.random() > pathLengths)) {
         if (stepDuration == 0) {
           nextCell = walkFromCell(cells, nextCell)
@@ -56,6 +59,7 @@ export namespace Generator {
       }
 
       // Then start over by finding a new random wall anywhere inside the perimeter
+      currentCell.isCurrentlyProcessing = false;
     }
   }
 
@@ -65,6 +69,7 @@ export namespace Generator {
       cell.explored = false;
       cell.isSolution = false;
       cell.hasUnvisitedNeighbors = true;
+      cell.isCurrentlyProcessing = false;
     }))
   }
 
@@ -73,6 +78,7 @@ export namespace Generator {
       cell.walls = [1, 1, 1, 1];
       cell.explored = cell.isSolution;
       cell.hasUnvisitedNeighbors = true;
+      cell.isCurrentlyProcessing = false;
     }))
   }
 

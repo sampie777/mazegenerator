@@ -60,6 +60,7 @@ const MazeCanvas: React.FC<Props> = (props) => {
 
   const paintCells = (context: CanvasRenderingContext2D) => {
     const size = sizeRef.current;
+    const wallSize = wallSizeRef.current;
 
     // Draw background color and passive walls
     cellsRef.current.forEach((row, y) => row.forEach((cell, x) => {
@@ -70,6 +71,13 @@ const MazeCanvas: React.FC<Props> = (props) => {
       context.fillStyle = cell.isSolution && showSolutionPath.current ? "#8c8"
         : cell.explored ? "#fff" : "#aaa";
       context.fillRect(cellStart.x, cellStart.y, size, size);
+
+      if (cell.isCurrentlyProcessing) {
+        context.strokeStyle = "#aaf";
+        context.lineWidth = wallSizeRef.current;
+        context.lineCap = "round";
+        context.strokeRect(cellStart.x + wallSize, cellStart.y + wallSize, size - wallSize * 2, size - wallSize * 2);
+      }
 
       cell.walls.forEach((_, w) => {
         const wallStart = getStartingPointForWall(w);
