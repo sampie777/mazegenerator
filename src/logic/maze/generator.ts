@@ -18,7 +18,8 @@ export namespace Generator {
             y: y,
             walls: [0, 0, 0, 0],
             explored: false,
-            isSolution: false
+            isSolution: false,
+            hasUnvisitedNeighbors: true,
           }
         )
       }
@@ -62,6 +63,7 @@ export namespace Generator {
     cells.forEach(row => row.forEach(cell => {
       cell.walls = [1, 1, 1, 1];
       cell.explored = cell.isSolution;
+      cell.hasUnvisitedNeighbors = true;
     }))
   }
 
@@ -83,7 +85,7 @@ export namespace Generator {
   }
 
   const getRandomStartCell = (cells: Cell[][]): Cell => {
-    const explored = cells.flatMap(row => row.filter(it => it.explored));
+    const explored = cells.flatMap(row => row.filter(it => it.explored && it.hasUnvisitedNeighbors));
     if (explored.length == 0) {
       // Get random cell
       return cells[getRandomIndex(cells.length)][getRandomIndex(cells[0].length)];
@@ -96,7 +98,10 @@ export namespace Generator {
     // Get random unexplored neighbor cell
     const neighbors = getNeighbours(cells, cell);
     const unexplored = neighbors.filter(it => !it.explored);
-    if (unexplored.length == 0) return null;
+    if (unexplored.length == 0) {
+      cell.hasUnvisitedNeighbors = false;
+      return null;
+    }
 
     const nextCell = unexplored[getRandomIndex(unexplored.length)];
     nextCell.explored = true;

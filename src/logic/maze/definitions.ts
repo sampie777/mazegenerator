@@ -4,4 +4,5 @@ export type Cell = {
   walls: number[]
   explored: boolean
   isSolution: boolean
+  hasUnvisitedNeighbors: boolean
 }
