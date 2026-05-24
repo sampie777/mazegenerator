@@ -100,13 +100,20 @@ export namespace Generator {
   }
 
   const getRandomStartCell = (cells: Cell[][]): Cell => {
-    const explored = cells.flatMap(row => row.filter(it => it.explored && it.hasUnvisitedNeighbors));
-    if (explored.length == 0) {
+    const cellsFlat = cells.flatMap(row => row);
+    const exploredButNonFinishedCells = cellsFlat.filter(it => it.explored && it.hasUnvisitedNeighbors);
+    if (exploredButNonFinishedCells.length == 0) {
       // Get random cell
       return cells[getRandomIndex(cells.length)][getRandomIndex(cells[0].length)];
     }
 
-    return explored[getRandomIndex(explored.length)];
+    // If only a few are left, just get a random one for speed improvement
+    const nonExploredCells = cellsFlat.filter(it => !it.explored);
+    if (nonExploredCells.length < 4) {
+      return nonExploredCells[getRandomIndex(nonExploredCells.length)];
+    }
+
+    return exploredButNonFinishedCells[getRandomIndex(exploredButNonFinishedCells.length)];
   }
 
   const walkFromCell = (cells: Cell[][], cell: Cell): Cell | null => {
