@@ -1,9 +1,13 @@
 import './App.less'
 import Maze from "./gui/maze/Maze";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Generator } from "./logic/maze/generator.ts";
 
 const App = () => {
+  const cellSize = 40;
+  const wallSize = 4;
+
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [pathLengths, setPathLengths] = useState((1 - 0.07) * 100);
   const [stepDuration, setStepDuration] = useState(6);
@@ -33,9 +37,18 @@ const App = () => {
     Generator.fullResetMaze(cells);
   }
 
+  useEffect(() => {
+    if (containerRef.current == null) return;
+    const maxWidth = containerRef.current.clientWidth;
+    const canvasWidth = cellSize * width + wallSize * 4;
+    const desirableScale = maxWidth / canvasWidth;
+
+    setScale(Math.min(100, Math.floor(desirableScale * 100)));
+  }, [width]);
+
   return <>
     <section id="center">
-      <div className="container f-full">
+      <div className="container f-full" ref={containerRef}>
         <h1>Maze Generator</h1>
         <p>
           This tool let's you create a maze based on a predefined solution path.<br />
@@ -79,8 +92,8 @@ const App = () => {
         <Maze cells={cells}
               disabled={isGenerating}
               showSolutionPath={showSolutionPath}
-              cellSize={40 * scale / 100}
-              wallSize={4 * scale / 100}
+              cellSize={cellSize * scale / 100}
+              wallSize={wallSize * scale / 100}
         />
 
         <div className={"options"}>
