@@ -68,12 +68,12 @@ const MazeCanvas: React.FC<Props> = (props) => {
         x: canvasPaddingRef.current + x * size,
         y: canvasPaddingRef.current + y * size,
       }
-      context.fillStyle = cell.isSolution && showSolutionPath.current ? "#60ea60" : "#fff";
+      context.fillStyle = cell.isSolution && showSolutionPath.current ? "#ccc" : "#fff";
       context.fillRect(cellStart.x, cellStart.y, size, size);
 
       if (cell.isCurrentlyProcessing) {
         context.strokeStyle = "#aaf";
-        context.lineWidth = wallSizeRef.current;
+        context.lineWidth = wallSizeRef.current * 2;
         context.lineCap = "round";
         context.strokeRect(cellStart.x + wallSize, cellStart.y + wallSize, size - wallSize * 2, size - wallSize * 2);
       }
