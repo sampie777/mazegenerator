@@ -2,6 +2,7 @@ import './App.less'
 import Maze from "./gui/maze/Maze";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Generator } from "./logic/maze/generator.ts";
+import type { Alignment } from "./logic/maze/definitions.ts";
 
 const App = () => {
   const cellSize = 40;
@@ -15,6 +16,7 @@ const App = () => {
   const [width, setWidth] = useState(12);
   const [height, setHeight] = useState(8);
   const [scale, setScale] = useState(100);
+  const [alignment, setAlignment] = useState<Alignment>("default");
 
   const cells = useMemo(() => Generator.generateNewCells(width, height), [width, height]);
 
@@ -28,6 +30,7 @@ const App = () => {
       await Generator.generatePaths(cells, {
         pathLengths: 1 - pathLengths / 100,
         stepDuration: stepDuration,
+        alignment: alignment
       });
       setIsGenerating(false);
     }, 10);
@@ -89,6 +92,34 @@ const App = () => {
               ({scale} %)
             </label>
           </div>
+        </div>
+
+        <div className={"options"}>
+          Alignment:
+          <label>
+            <input type={"radio"}
+                   name={"alignment"}
+                   value={"default"}
+                   checked={alignment == "default"}
+                   onChange={e => setAlignment(e.target.value as Alignment)} />
+            Default
+          </label>
+          <label>
+            <input type={"radio"}
+                   name={"alignment"}
+                   value={"horizontal"}
+                   checked={alignment == "horizontal"}
+                   onChange={e => setAlignment(e.target.value as Alignment)} />
+            Horizontal
+          </label>
+          <label>
+            <input type={"radio"}
+                   name={"alignment"}
+                   value={"vertical"}
+                   checked={alignment == "vertical"}
+                   onChange={e => setAlignment(e.target.value as Alignment)} />
+            Vertical
+          </label>
         </div>
 
         <Maze cells={cells}

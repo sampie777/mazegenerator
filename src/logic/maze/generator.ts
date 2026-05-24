@@ -1,10 +1,11 @@
-import type { Cell } from "./definitions.ts";
+import type { Alignment, Cell } from "./definitions.ts";
 import { delayed } from "../utils.ts";
 
 export namespace Generator {
   export type Options = {
     pathLengths: number // 0 for long paths, 1 for very short paths
     stepDuration: number  // ms each step may take. Set to 0 for no animation
+    alignment: Alignment  // do we prefer vertical paths over horizontal paths?
   }
 
   export const generateNewCells = (width: number, height: number) => {
@@ -32,7 +33,8 @@ export namespace Generator {
     cells: Cell[][],
     options: Options = {
       pathLengths: 0.07,
-      stepDuration: 10
+      stepDuration: 10,
+      alignment: "default",
     }) => {
     const pathLengths = Math.max(0, Math.min(0.9, options.pathLengths));
     const stepDuration = Math.max(0, options.stepDuration);
@@ -52,9 +54,9 @@ export namespace Generator {
       let nextCell: Cell | null = currentCell;
       while (nextCell && (pathLengths == 0 || Math.random() > pathLengths)) {
         if (stepDuration == 0) {
-          nextCell = walkFromCell(cells, nextCell)
+          nextCell = walkFromCell(cells, nextCell, options.alignment)
         } else {
-          nextCell = await delayed(() => walkFromCell(cells, nextCell!), stepDuration);
+          nextCell = await delayed(() => walkFromCell(cells, nextCell!, options.alignment), stepDuration);
         }
       }
 
@@ -116,7 +118,10 @@ export namespace Generator {
     return exploredButNonFinishedCells[getRandomIndex(exploredButNonFinishedCells.length)];
   }
 
-  const walkFromCell = (cells: Cell[][], cell: Cell): Cell | null => {
+  const walkFromCell = (
+    cells: Cell[][],
+    cell: Cell,
+    alignment: Alignment): Cell | null => {
     // Get random unexplored neighbor cell
     const neighbors = getNeighbours(cells, cell);
     const unexplored = neighbors.filter(it => !it.explored);
@@ -132,12 +137,30 @@ export namespace Generator {
       return null;
     }
 
-    const nextCell = unexplored[getRandomIndex(unexplored.length)];
+    const nextCell = getNextCell(cell, unexplored, alignment);
     nextCell.explored = true;
 
     // Remove wall between the cells
     removeWallBetweenCells(cell, nextCell);
     return nextCell;
+  }
+
+  const getNextCell = (from: Cell, cells: Cell[], alignment: Alignment) => {
+    if (cells.length == 0) throw Error("Expected at least 1 cell in unexplored cells")
+    if (cells.length == 1) return cells[0];
+
+    const verticalNeighbors = cells.filter(cell => cell.x == from.x)
+    const horizontalNeighbors = cells.filter(cell => cell.y == from.y)
+
+    if (alignment == "default" || verticalNeighbors.length == 0 || horizontalNeighbors.length == 0) {
+      return cells[getRandomIndex(cells.length)];
+    }
+
+    const followAlignmentChance = 0.25;
+    if (Math.random() > (alignment == "horizontal" ? 1 - followAlignmentChance : followAlignmentChance)) {
+      return verticalNeighbors[getRandomIndex(verticalNeighbors.length)];
+    }
+    return horizontalNeighbors[getRandomIndex(horizontalNeighbors.length)];
   }
 
   const getRandomIndex = (max: number) => Math.floor(Math.random() * max)

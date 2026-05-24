@@ -7,3 +7,5 @@ export type Cell = {
   hasUnvisitedNeighbors: boolean
   isCurrentlyProcessing: boolean
 }
+
+export type Alignment = "default" | "horizontal" | "vertical";
