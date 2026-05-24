@@ -37,7 +37,7 @@ export namespace Generator {
     const stepDuration = Math.max(0, options.stepDuration);
 
     // Reset
-    resetMaze(cells);
+    prepareMazeForGeneration(cells);
 
     // First clear the solution path from walls
     drawSolutionWalls(cells);
@@ -59,7 +59,16 @@ export namespace Generator {
     }
   }
 
-  const resetMaze = (cells: Cell[][]) => {
+  export const fullResetMaze = (cells: Cell[][]) => {
+    cells.forEach(row => row.forEach(cell => {
+      cell.walls = [0, 0, 0, 0];
+      cell.explored = false;
+      cell.isSolution = false;
+      cell.hasUnvisitedNeighbors = true;
+    }))
+  }
+
+  const prepareMazeForGeneration = (cells: Cell[][]) => {
     cells.forEach(row => row.forEach(cell => {
       cell.walls = [1, 1, 1, 1];
       cell.explored = cell.isSolution;

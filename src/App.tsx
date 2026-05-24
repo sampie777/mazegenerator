@@ -27,6 +27,10 @@ const App = () => {
     setTitle("Done")
   }
 
+  const resetMaze = () => {
+    Generator.fullResetMaze(cells);
+  }
+
   return <>
     <section id="center">
       <div className="container">
@@ -74,6 +78,7 @@ const App = () => {
           </div>
 
           <div>
+            <button onClick={resetMaze} disabled={isGenerating}>Reset</button>
             <button onClick={startGeneration} disabled={isGenerating}>Generate</button>
             <label>
               <input type={"checkbox"}
