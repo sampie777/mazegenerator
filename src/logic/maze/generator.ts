@@ -1,10 +1,8 @@
 import type { Alignment, Cell } from "./definitions.ts";
-import { delayed } from "../utils.ts";
 
 export namespace Generator {
   export type Options = {
     pathLengths: number // 0 for long paths, 1 for very short paths
-    stepDuration: number  // ms each step may take. Set to 0 for no animation
     alignment: Alignment  // do we prefer vertical paths over horizontal paths?
   }
 
@@ -33,11 +31,11 @@ export namespace Generator {
     cells: Cell[][],
     options: Options = {
       pathLengths: 0.07,
-      stepDuration: 10,
       alignment: "default",
-    }) => {
+    },
+    preCalculationCallback?: () => Promise<void>
+  ) => {
     const pathLengths = Math.max(0, Math.min(0.9, options.pathLengths));
-    const stepDuration = Math.max(0, options.stepDuration);
 
     // Reset
     prepareMazeForGeneration(cells);
@@ -53,11 +51,8 @@ export namespace Generator {
       // Then, open that wall and randomly create/walk a path over all unexplored cells until a random number hits or there's no valid path available
       let nextCell: Cell | null = currentCell;
       while (nextCell && (pathLengths == 0 || Math.random() > pathLengths)) {
-        if (stepDuration == 0) {
-          nextCell = walkFromCell(cells, nextCell, options.alignment)
-        } else {
-          nextCell = await delayed(() => walkFromCell(cells, nextCell!, options.alignment), stepDuration);
-        }
+        await preCalculationCallback?.();
+        nextCell = walkFromCell(cells, nextCell, options.alignment)
       }
 
       // Then start over by finding a new random wall anywhere inside the perimeter

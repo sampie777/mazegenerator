@@ -3,6 +3,7 @@ import Maze from "./gui/maze/Maze";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Generator } from "./logic/maze/generator.ts";
 import type { Alignment } from "./logic/maze/definitions.ts";
+import { delayed } from "./logic/utils.ts";
 
 const App = () => {
   const cellSize = 40;
@@ -18,6 +19,8 @@ const App = () => {
   const [scale, setScale] = useState(100);
   const [alignment, setAlignment] = useState<Alignment>("default");
 
+  const stepDurationRef = useRef(stepDuration);
+
   const cells = useMemo(() => Generator.generateNewCells(width, height), [width, height]);
 
   const startGeneration = () => {
@@ -29,11 +32,17 @@ const App = () => {
     setTimeout(async () => {
       await Generator.generatePaths(cells, {
         pathLengths: 1 - pathLengths / 100,
-        stepDuration: stepDuration,
         alignment: alignment
-      });
+      }, stepCallback);
       setIsGenerating(false);
     }, 10);
+  }
+
+  const stepCallback = async () => {
+    const cappedStepDuration = Math.max(0, stepDurationRef.current);
+    if (cappedStepDuration == 0) return
+    // Sleep
+    await delayed(() => null, cappedStepDuration);
   }
 
   const resetMaze = () => {
@@ -48,6 +57,10 @@ const App = () => {
 
     setScale(Math.min(100, Math.floor(desirableScale * 100)));
   }, [width]);
+
+  useEffect(() => {
+    stepDurationRef.current = stepDuration;
+  }, [stepDuration]);
 
   return <>
     <section id="center">
@@ -142,7 +155,6 @@ const App = () => {
           <label>Animation duration:
             <input type="range"
                    name="stepDuration"
-                   disabled={isGenerating}
                    min={0} max={150}
                    value={stepDuration}
                    onChange={e => setStepDuration(+e.target.value)} />
