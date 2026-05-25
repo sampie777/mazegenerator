@@ -53,7 +53,7 @@ const App = () => {
     // Don't let the GUI freeze completely, but only for a max amount of time
     const timePassed = Date.now() - startTime;
 
-    if (timePassed < 1000 && cappedStepDuration == 0) return true;
+    if (timePassed < 500 && cappedStepDuration == 0) return true;
     startTime = Date.now();
 
     // Sleep
