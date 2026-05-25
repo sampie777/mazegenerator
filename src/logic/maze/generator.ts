@@ -1,4 +1,4 @@
-import type { Alignment, Cell } from "./definitions.ts";
+import type { Alignment, Cell, Dimension } from "./definitions.ts";
 
 export namespace Generator {
   export type Options = {
@@ -31,7 +31,7 @@ export namespace Generator {
     cells: Cell[][],
     options: Options = {
       pathLengths: 0.07,
-      alignment: "default",
+      alignment: "random",
     },
     preCalculationCallback?: () => Promise<boolean>
   ) => {
@@ -133,7 +133,15 @@ export namespace Generator {
       return null;
     }
 
-    const nextCell = getNextCell(cell, unexplored, alignment);
+    const nextCell = getNextCell(
+      cell,
+      unexplored,
+      alignment,
+      {
+        width: cells[0].length,
+        height: cells.length
+      }
+    );
     nextCell.explored = true;
 
     // Remove wall between the cells
@@ -141,22 +149,49 @@ export namespace Generator {
     return nextCell;
   }
 
-  const getNextCell = (from: Cell, cells: Cell[], alignment: Alignment) => {
+  const getNextCell = (from: Cell, cells: Cell[], alignment: Alignment, mazeSize: Dimension) => {
+
     if (cells.length == 0) throw Error("Expected at least 1 cell in unexplored cells")
     if (cells.length == 1) return cells[0];
 
     const verticalNeighbors = cells.filter(cell => cell.x == from.x)
     const horizontalNeighbors = cells.filter(cell => cell.y == from.y)
 
-    if (alignment == "default" || verticalNeighbors.length == 0 || horizontalNeighbors.length == 0) {
+    if (alignment == "random" || verticalNeighbors.length == 0 || horizontalNeighbors.length == 0) {
       return cells[getRandomIndex(cells.length)];
     }
 
-    const followAlignmentChance = 0.25;
-    if (Math.random() > (alignment == "horizontal" ? 1 - followAlignmentChance : followAlignmentChance)) {
-      return verticalNeighbors[getRandomIndex(verticalNeighbors.length)];
+    if (alignment == "horizontal" || alignment == "vertical") {
+      const followAlignmentChance = 0.75;
+
+      if (Math.random() > (alignment == "horizontal" ? followAlignmentChance : 1 - followAlignmentChance)) {
+        return verticalNeighbors[getRandomIndex(verticalNeighbors.length)];
+      }
+      return horizontalNeighbors[getRandomIndex(horizontalNeighbors.length)];
     }
-    return horizontalNeighbors[getRandomIndex(horizontalNeighbors.length)];
+
+    if (alignment == "square") {
+      const followAlignmentChance = 0.93;
+      const pos = {
+        x: from.x,
+        y: from.y,
+      }
+
+      // Mirror so the cells seems to be in the first quadrant
+      if (pos.x > mazeSize.width / 2) pos.x = mazeSize.width - pos.x;
+      if (pos.y > mazeSize.height / 2) pos.y = mazeSize.height - pos.y;
+
+      const centerGradiant = mazeSize.width / Math.max(1, mazeSize.height);
+      const cellGradiant = pos.x / Math.max(1, pos.y);
+      const preferredAlignment = cellGradiant < centerGradiant ? "vertical" : "horizontal";
+
+      if (Math.random() > (preferredAlignment == "horizontal" ? followAlignmentChance : 1 - followAlignmentChance)) {
+        return verticalNeighbors[getRandomIndex(verticalNeighbors.length)];
+      }
+      return horizontalNeighbors[getRandomIndex(horizontalNeighbors.length)];
+    }
+
+    throw Error("Unknown alignment option")
   }
 
   const getRandomIndex = (max: number) => Math.floor(Math.random() * max)

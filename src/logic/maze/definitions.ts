@@ -8,4 +8,9 @@ export type Cell = {
   isCurrentlyProcessing: boolean
 }
 
-export type Alignment = "default" | "horizontal" | "vertical";
+export type Alignment = "random" | "horizontal" | "vertical" | "square";
+
+export type Dimension = {
+  width: number
+  height: number
+}

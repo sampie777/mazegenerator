@@ -17,7 +17,7 @@ const App = () => {
   const [width, setWidth] = useState(12);
   const [height, setHeight] = useState(8);
   const [scale, setScale] = useState(100);
-  const [alignment, setAlignment] = useState<Alignment>("default");
+  const [alignment, setAlignment] = useState<Alignment>("random");
 
   const stepDurationRef = useRef(stepDuration);
   const shouldStopRef = useRef(false);
@@ -126,10 +126,10 @@ const App = () => {
           <label>
             <input type={"radio"}
                    name={"alignment"}
-                   value={"default"}
-                   checked={alignment == "default"}
+                   value={"random"}
+                   checked={alignment == "random"}
                    onChange={e => setAlignment(e.target.value as Alignment)} />
-            Default
+            Random
           </label>
           <label>
             <input type={"radio"}
@@ -146,6 +146,14 @@ const App = () => {
                    checked={alignment == "vertical"}
                    onChange={e => setAlignment(e.target.value as Alignment)} />
             Vertical
+          </label>
+          <label>
+            <input type={"radio"}
+                   name={"alignment"}
+                   value={"square"}
+                   checked={alignment == "square"}
+                   onChange={e => setAlignment(e.target.value as Alignment)} />
+            Square
           </label>
         </div>
 
