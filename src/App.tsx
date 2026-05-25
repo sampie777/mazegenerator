@@ -18,6 +18,7 @@ const App = () => {
   const [height, setHeight] = useState(8);
   const [scale, setScale] = useState(100);
   const [alignment, setAlignment] = useState<Alignment>("random");
+  const [followAlignmentChance, setFollowAlignmentChance] = useState(1);
 
   const stepDurationRef = useRef(stepDuration);
   const shouldStopRef = useRef(false);
@@ -35,7 +36,8 @@ const App = () => {
     setTimeout(async () => {
       await Generator.generatePaths(cells, {
         pathLengths: 1 - pathLengths / 100,
-        alignment: alignment
+        alignment: alignment,
+        followAlignmentChance: followAlignmentChance,
       }, stepCallback);
 
       setIsGenerating(false);
@@ -75,6 +77,14 @@ const App = () => {
   useEffect(() => {
     stepDurationRef.current = stepDuration;
   }, [stepDuration]);
+
+  useEffect(() => {
+    if (alignment == 'horizontal' || alignment == 'vertical') {
+      setFollowAlignmentChance(0.5);
+    } else if (alignment == 'square') {
+      setFollowAlignmentChance(0.93);
+    }
+  }, [alignment]);
 
   return <>
     <section id="center">
@@ -116,45 +126,60 @@ const App = () => {
                      min={1} max={150}
                      value={scale}
                      onChange={e => setScale(+e.target.value)} />
-              ({scale} %)
+              {scale} %
             </label>
           </div>
         </div>
 
-        <div className={"options"}>
-          Alignment:
-          <label>
-            <input type={"radio"}
-                   name={"alignment"}
-                   value={"random"}
-                   checked={alignment == "random"}
-                   onChange={e => setAlignment(e.target.value as Alignment)} />
-            Random
-          </label>
-          <label>
-            <input type={"radio"}
-                   name={"alignment"}
-                   value={"horizontal"}
-                   checked={alignment == "horizontal"}
-                   onChange={e => setAlignment(e.target.value as Alignment)} />
-            Horizontal
-          </label>
-          <label>
-            <input type={"radio"}
-                   name={"alignment"}
-                   value={"vertical"}
-                   checked={alignment == "vertical"}
-                   onChange={e => setAlignment(e.target.value as Alignment)} />
-            Vertical
-          </label>
-          <label>
-            <input type={"radio"}
-                   name={"alignment"}
-                   value={"square"}
-                   checked={alignment == "square"}
-                   onChange={e => setAlignment(e.target.value as Alignment)} />
-            Square
-          </label>
+        <div>
+          <div className={"options"}>
+            Alignment:
+            <label>
+              <input type={"radio"}
+                     name={"alignment"}
+                     value={"random"}
+                     checked={alignment == "random"}
+                     onChange={e => setAlignment(e.target.value as Alignment)} />
+              Random
+            </label>
+            <label>
+              <input type={"radio"}
+                     name={"alignment"}
+                     value={"horizontal"}
+                     checked={alignment == "horizontal"}
+                     onChange={e => setAlignment(e.target.value as Alignment)} />
+              Horizontal
+            </label>
+            <label>
+              <input type={"radio"}
+                     name={"alignment"}
+                     value={"vertical"}
+                     checked={alignment == "vertical"}
+                     onChange={e => setAlignment(e.target.value as Alignment)} />
+              Vertical
+            </label>
+            <label>
+              <input type={"radio"}
+                     name={"alignment"}
+                     value={"square"}
+                     checked={alignment == "square"}
+                     onChange={e => setAlignment(e.target.value as Alignment)} />
+              Square
+            </label>
+          </div>
+          {alignment != "random" &&
+            <div className={"options"} style={{ marginTop: '10px', scale: 0.95 }}>
+              <label>Follow alignment:
+                <input type="range"
+                       name="pathLengths"
+                       disabled={isGenerating}
+                       min={0} max={100}
+                       value={followAlignmentChance * 100}
+                       onChange={e => setFollowAlignmentChance(+e.target.value / 100)} />
+                {Math.round(followAlignmentChance * 100)} %
+              </label>
+            </div>
+          }
         </div>
 
         <Maze cells={cells}
@@ -172,7 +197,7 @@ const App = () => {
                    min={0} max={100}
                    value={pathLengths}
                    onChange={e => setPathLengths(+e.target.value)} />
-            ({pathLengths} %)
+            {pathLengths} %
           </label>
           <label>Animation duration:
             <input type="range"
@@ -181,7 +206,7 @@ const App = () => {
                    value={stepDuration}
                    onChange={e => setStepDuration(+e.target.value)} />
             <span style={{ width: '100px' }}>
-              ({stepDuration == 0 ? "Max" : Math.round(1000 / stepDuration)} step/s)
+              {stepDuration == 0 ? "Max" : Math.round(1000 / stepDuration)} step/s
             </span>
           </label>
         </div>

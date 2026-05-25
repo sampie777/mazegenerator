@@ -4,6 +4,7 @@ export namespace Generator {
   export type Options = {
     pathLengths: number // 0 for long paths, 1 for very short paths
     alignment: Alignment  // do we prefer vertical paths over horizontal paths?
+    followAlignmentChance: number // How strictly do we need to adhere to the alignment?
   }
 
   export const generateNewCells = (width: number, height: number) => {
@@ -32,6 +33,7 @@ export namespace Generator {
     options: Options = {
       pathLengths: 0.07,
       alignment: "random",
+      followAlignmentChance: 1.0,
     },
     preCalculationCallback?: () => Promise<boolean>
   ) => {
@@ -53,7 +55,7 @@ export namespace Generator {
       while (nextCell && (pathLengths == 0 || Math.random() > pathLengths)) {
         if (await preCalculationCallback?.() === false) return;
 
-        nextCell = walkFromCell(cells, nextCell, options.alignment)
+        nextCell = walkFromCell(cells, nextCell, options.alignment, options.followAlignmentChance);
       }
 
       // Then start over by finding a new random wall anywhere inside the perimeter
@@ -117,7 +119,8 @@ export namespace Generator {
   const walkFromCell = (
     cells: Cell[][],
     cell: Cell,
-    alignment: Alignment): Cell | null => {
+    alignment: Alignment,
+    followAlignmentChance: number): Cell | null => {
     // Get random unexplored neighbor cell
     const neighbors = getNeighbours(cells, cell);
     const unexplored = neighbors.filter(it => !it.explored);
@@ -140,7 +143,8 @@ export namespace Generator {
       {
         width: cells[0].length,
         height: cells.length
-      }
+      },
+      followAlignmentChance
     );
     nextCell.explored = true;
 
@@ -149,7 +153,12 @@ export namespace Generator {
     return nextCell;
   }
 
-  const getNextCell = (from: Cell, cells: Cell[], alignment: Alignment, mazeSize: Dimension) => {
+  const getNextCell = (
+    from: Cell,
+    cells: Cell[],
+    alignment: Alignment,
+    mazeSize: Dimension,
+    followAlignmentChance: number) => {
 
     if (cells.length == 0) throw Error("Expected at least 1 cell in unexplored cells")
     if (cells.length == 1) return cells[0];
@@ -162,7 +171,7 @@ export namespace Generator {
     }
 
     if (alignment == "horizontal" || alignment == "vertical") {
-      const followAlignmentChance = 0.75;
+      followAlignmentChance = 0.5 + followAlignmentChance  / 2;
 
       if (Math.random() > (alignment == "horizontal" ? followAlignmentChance : 1 - followAlignmentChance)) {
         return verticalNeighbors[getRandomIndex(verticalNeighbors.length)];
@@ -171,7 +180,6 @@ export namespace Generator {
     }
 
     if (alignment == "square") {
-      const followAlignmentChance = 0.93;
       const pos = {
         x: from.x,
         y: from.y,

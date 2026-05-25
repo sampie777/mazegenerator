@@ -40,13 +40,19 @@ label {
   font-size: 0.8rem;
   display: flex;
   flex-direction: row;
-  gap: 20px;
+  row-gap: 10px;
+  column-gap: 20px;
   flex-wrap: wrap;
   justify-content: center;
 
   input[type=number] {
     width: 70px;
     text-align: right;
+  }
+
+  input[type=range] {
+    scale: 0.85;
+    margin: auto -5px;
   }
 }
 
