@@ -11,6 +11,7 @@ const App = () => {
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showAmazing, setShowAmazing] = useState(false);
   const [pathLengths, setPathLengths] = useState(100);
   const [stepDuration, setStepDuration] = useState(6);
   const [showSolutionPath, setShowSolutionPath] = useState(true);
@@ -42,6 +43,9 @@ const App = () => {
 
       setIsGenerating(false);
       shouldStopRef.current = false;
+
+      setShowAmazing(true);
+      setTimeout(() => setShowAmazing(false), 1000);
     }, 10);
   }
 
@@ -219,7 +223,7 @@ const App = () => {
           <div className={"generating-actions"}>
             <button onClick={startGeneration}
                     className={"generateButton"}
-                    disabled={isGenerating || (width < 1 || height < 1)}>{isGenerating ? "Generating..." : "Generate"}</button>
+                    disabled={isGenerating || (width < 1 || height < 1)}>{isGenerating ? "Generating..." : showAmazing ? "A-maze-ing!" : "Generate"}</button>
             <button onClick={() => shouldStopRef.current = true}
                     disabled={!isGenerating}>Stop
             </button>
