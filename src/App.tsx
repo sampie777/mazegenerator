@@ -180,7 +180,9 @@ const App = () => {
                    min={0} max={150}
                    value={stepDuration}
                    onChange={e => setStepDuration(+e.target.value)} />
-            ({stepDuration} ms)
+            <span style={{ width: '100px' }}>
+              ({stepDuration == 0 ? "Max" : Math.round(1000 / stepDuration)} step/s)
+            </span>
           </label>
         </div>
 
